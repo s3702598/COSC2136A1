@@ -29,16 +29,23 @@ int main(int argc, char** argv){
     testNode();
     testNodeList();
     std::cout << "DONE TESTING" << std::endl << std::endl;
-/*
+
     // Load Environment 
     Env env;
     readEnvStdin(env);
-    
+    for(int r=0; r<ENV_DIM; ++r){
+        for (int c=0; c<ENV_DIM; ++c){
+            std::cout << env[r][c];
+        }
+        std::cout << '\n';
+    }
+
     // Solve using forwardSearch
     // THIS WILL ONLY WORK IF YOU'VE FINISHED MILESTONE 2
     PathSolver* pathSolver = new PathSolver();
     pathSolver->forwardSearch(env);
 
+    /*
     NodeList* exploredPositions = nullptr;
     exploredPositions = pathSolver->getNodesExplored();
 
@@ -55,7 +62,11 @@ int main(int argc, char** argv){
 }
 
 void readEnvStdin(Env env){
-    //TODO 
+     for (int r=0; r<ENV_DIM; ++r){
+        for (int c = 0; c<ENV_DIM; ++c){
+            std::cin >> env[r][c];
+        }
+    }
 }
 
 void printEnvStdout(Env env, NodeList* solution) {

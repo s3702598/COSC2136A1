@@ -10,7 +10,7 @@ NodeList::NodeList(){
 }
 
 NodeList::~NodeList(){
-    for (int i =0; i<length; i++){
+    for (int i = 0; i<length; i++){
         delete nodes[i];
     }
     length = 0;
