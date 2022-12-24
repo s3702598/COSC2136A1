@@ -43,7 +43,10 @@ private:
     /*                                           */
     /* YOU MAY ADD YOUR MODIFICATIONS HERE       */
     /*                                           */
-    
+    Node* startNode;
+    Node* goalNode;
+
+    NodeList* getPathRecursive(Env env, Node* currentNode, NodeList* currentList);
 };
 
 
