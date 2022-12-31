@@ -40,19 +40,20 @@ private:
 
     // NodeList: list of node objects
     // You may assume a fixed size for M1, M2, M3
-    
-    // 1D array of pointers to Node objects
-    Node** nodes;
+    //Node* nodes[NODE_LIST_ARRAY_MAX_SIZE];
 
     // Number of nodes currently in the NodeList
     int length;
 
-    // number of spaces for nodes in NodeList
-    int capacity;
-
     /*                                           */
     /* YOU MAY ADD YOUR MODIFICATIONS HERE       */
     /*                                           */
+
+    // 1D array of pointers to Node objects
+    Node** nodes;
+
+    // number of spaces for nodes in NodeList
+    int capacity;
 };
 
 

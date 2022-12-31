@@ -12,7 +12,7 @@ public:
     /*                                           */
 
     // Constructor/Destructor
-    PathSolver(int nRows, int nCols);
+    //PathSolver();
     ~PathSolver();
 
     // Execute forward search algorithm
@@ -32,6 +32,9 @@ public:
     /* YOU MAY ADD YOUR MODIFICATIONS HERE       */
     /*                                           */
 
+    //Updated contructor
+    PathSolver(int nRows, int nCols);
+
 private:
     /*                                           */
     /* DO NOT MOFIFY THESE VARIABLES             */
@@ -46,14 +49,18 @@ private:
     
     // Pointer to a start Node
     Node* startNode;
+
     // Pointer to a goal Node
     Node* goalNode;
+
     // number of rows in the environment being solved
     int nRows; 
+
     // number of columns in the environment being solved
     int nCols; 
 
     // Helper function that executes backtracking utilising recursion
+    // Returns a NodeList pointer to the shortest path from start to goal
     NodeList* getPathRecursive(Env env, Node* currentNode, NodeList* currentList);
 };
 

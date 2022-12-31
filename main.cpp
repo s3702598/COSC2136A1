@@ -1,28 +1,30 @@
 /*
+Created by: Honorata Trojanowska s3702598
+
 Program to navigate a robot through a 2D environment and find the shortest 
 way from start to goal.
 
 I have completed the program utilising the alogoritm given in the Assignment prompt
 for finding a path from start to goal as well as recurrence for 
-finding the shortest way from start to finish. 
-In Milestone 4 I utilised vectors as the NodeList array size changes, 
-which vector as a container can accommodate. 
+finding the shortest way from start to finish. I chosen to use recurrence as 
+the program need to keep adding Nodes to the NodeList until the base case 
+is achieved.
+In Milestone 4 I utilised vectors due to the NodeList array size changes, 
+which vector, as a container, can easily accommodate. 
 
-My biggest struggle was to come up with the algoritm for getting the shortest path.
-After research and some refresher of my previous coding I've decided to use recurrence
-as it seemed to be the most straight forward way.
+My biggest challenge was to come up with the algoritm for getting the shortest path.
+After research and some refresher I've decided to use recurrence as it seemed to be 
+the most straight forward way.
 Pointers are new to me so I had to do a lot of additional studies to use them 
 without errors in the code.
 
-Created by: Honorata Trojanowska s3702598
 */
-
-
 
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <string>
+//only used to contain intermediate input in the readEnvStdin function
 #include <vector>
 
 #include "Types.h"
@@ -47,22 +49,17 @@ int main(int argc, char** argv){
     // AS YOU WORK ON MILESTONE 2. YOU CAN UPDATE THEM YOURSELF
     // AS YOU GO ALONG.
     // COMMENT THESE OUT BEFORE YOU SUBMIT!!!
+    /*
     std::cout << "TESTING - COMMENT THE OUT TESTING BEFORE YOU SUBMIT!!!" << std::endl;
     testNode();
     testNodeList();
     std::cout << "DONE TESTING" << std::endl << std::endl;
+    */
 
     // Load Environment 
     int noOfRows;
     int noOfCols;
     Env env = readEnvStdin(noOfRows, noOfCols); 
-    std::cout << "Back in main \n";
-    for(int r=0; r<noOfRows; ++r){
-        for (int c=0; c<noOfCols; ++c){
-            std::cout << env[r][c];
-        }
-        std::cout << '\n';
-    }
 
     // Solve using forwardSearch
     // THIS WILL ONLY WORK IF YOU'VE FINISHED MILESTONE 2
@@ -77,11 +74,6 @@ int main(int argc, char** argv){
     // Get the path
     // THIS WILL ONLY WORK IF YOU'VE FINISHED MILESTONE 3
     NodeList* solution = pathSolver->getPath(env);
-    std::cout << "Solution lenght is: " << solution->getLength() << '\n';
-    for (int i = 0; i<solution->getLength(); ++i){
-        std:: cout << solution->getNode(i)->getRow() << ' ' 
-            << solution->getNode(i)->getCol() << '\n';
-    }
 
     printEnvStdout(env, solution, noOfRows, noOfCols);
 
@@ -151,9 +143,11 @@ void printEnvStdout(Env env, NodeList* solution, int nRows, int nCols) {
 
     int nextRow;
     int nextCol;
+    // We starting at index 1 as index zero is a start Node, which is already known
     int newRow = solution->getNode(1)->getRow();
     int newCol = solution->getNode(1)->getCol();
     for (int i = 1; i<(solution->getLength()-1); ++i){
+        // We are looking at the next Node in NodeList
         nextRow = solution->getNode(i+1)->getRow();
         nextCol = solution->getNode(i+1)->getCol();
         if (newCol == (nextCol -1)){
@@ -179,12 +173,14 @@ void printEnvStdout(Env env, NodeList* solution, int nRows, int nCols) {
        
     }
 
+    // We are printing the environment with direction arrows
     for(int r= 0; r<nRows; ++r){
         for (int c = 0 ; c<nCols; ++c){
             std::cout << env[r][c];
         }
         std::cout << std::endl;
     }
+    
 }
 
 void testNode() {

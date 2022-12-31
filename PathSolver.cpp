@@ -68,7 +68,6 @@ void PathSolver::forwardSearch(Env env){
     bool goal_can_be_found = true;
 
     do{
-        std::cout << "p= " << p->getRow() << " " << p->getCol() << '\n';
         // We will be looking in 4 directions
         for (int dir = 1; dir<= 4; ++dir){ 
             int newRow = p->getRow();
@@ -101,18 +100,16 @@ void PathSolver::forwardSearch(Env env){
                 if (!found){
                     // Position is not in Closed list
                     Node temp(newRow, newCol, 1+p->getDistanceTraveled());
-                    // Add to open list
+                    // Add temp Node to open list
                     P.addElement(&temp);
-                    std::cout << "Node added: " << temp.getRow() << " " << temp.getCol() 
-                    << " " << temp.getDistanceTraveled() << '\n';
                 }
                 
             }
         }
-        // add p to Closed list
+        // Add p to Closed list
         nodesExplored->addElement(p);
 
-        //initialised to a high value that will certainly be replaced
+        // Initialised to a high value that will certainly be replaced
         int smallestDistance = 1000; 
         int index = -1; 
 
@@ -136,14 +133,14 @@ void PathSolver::forwardSearch(Env env){
             }
         }
 
-        std::cout << smallestDistance << " ";
-
+        // if Node index is valid 
         if (index != -1){
             p=P.getNode(index);
         } else {
             goal_can_be_found = false;
         }
 
+        // Finding the goal and updating distance travelled
         if ((p->getRow() == goalNode->getRow()) && (p->getCol() == goalNode->getCol())){
             found_goal = true;
             goalNode->setDistanceTraveled(p->getDistanceTraveled());
@@ -170,12 +167,9 @@ NodeList* PathSolver::getPath(Env env){
 
 }
 
-// Using recursive call, returns a NodeList pointer to the shortest path
-// from start to goal
+
 NodeList* PathSolver::getPathRecursive
     (Env env, Node* currentNode, NodeList* currentList){
-
-   //std::cout << " Nodes explored lenght: " << nodesExplored->getLength() << '\n';
 
     // Test for base case
     if ((currentNode->getRow() == startNode->getRow()) &&
@@ -213,19 +207,15 @@ NodeList* PathSolver::getPathRecursive
             for (int i = 0; (i<nodesExplored->getLength()) && !found; ++i){
                 temp = nodesExplored->getNode(i);
                 if ((temp->getRow() == newRow) && (temp->getCol() == newCol)){
-                    std::cout << "Found\n";
                     found = true;
                 }
             } 
 
             // Check if a Node was found in nodeExplored list 
             if (found){
-                std::cout << "Distance travelled: " << distanceTravelled <<
-                " Temp distance travelled : " << temp->getDistanceTraveled() << '\n';
                 // Check if distance  is 1 less then current node
                 if (temp->getDistanceTraveled() == (distanceTravelled - 1)){
                     // We have found node we are looking for
-                    std::cout << "Just before recursive call\n";
                     NodeList* ptr = getPathRecursive(env, temp, currentList);
                     ptr->addElement(currentNode);
                     return ptr;
