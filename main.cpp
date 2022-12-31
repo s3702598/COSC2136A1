@@ -1,7 +1,29 @@
+/*
+Program to navigate a robot through a 2D environment and find the shortest 
+way from start to goal.
+
+I have completed the program utilising the alogoritm given in the Assignment prompt
+for finding a path from start to goal as well as recurrence for 
+finding the shortest way from start to finish. 
+In Milestone 4 I utilised vectors as the NodeList array size changes, 
+which vector as a container can accommodate. 
+
+My biggest struggle was to come up with the algoritm for getting the shortest path.
+After research and some refresher of my previous coding I've decided to use recurrence
+as it seemed to be the most straight forward way.
+Pointers are new to me so I had to do a lot of additional studies to use them 
+without errors in the code.
+
+Created by: Honorata Trojanowska s3702598
+*/
+
+
+
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "Types.h"
 #include "Node.h"
@@ -13,11 +35,11 @@ void testNode();
 void testNodeList();
 
 // Read a environment from standard input.
-void readEnvStdin(Env env);
+Env readEnvStdin(int& nRows, int& nCols);
 
 // Print out a Environment to standard output with path.
 // To be implemented for Milestone 3
-void printEnvStdout(Env env, NodeList* solution);
+void printEnvStdout(Env env, NodeList* solution, int nRows, int nCols);
 
 
 int main(int argc, char** argv){
@@ -31,10 +53,12 @@ int main(int argc, char** argv){
     std::cout << "DONE TESTING" << std::endl << std::endl;
 
     // Load Environment 
-    Env env;
-    readEnvStdin(env);
-    for(int r=0; r<ENV_DIM; ++r){
-        for (int c=0; c<ENV_DIM; ++c){
+    int noOfRows;
+    int noOfCols;
+    Env env = readEnvStdin(noOfRows, noOfCols); 
+    std::cout << "Back in main \n";
+    for(int r=0; r<noOfRows; ++r){
+        for (int c=0; c<noOfCols; ++c){
             std::cout << env[r][c];
         }
         std::cout << '\n';
@@ -42,7 +66,7 @@ int main(int argc, char** argv){
 
     // Solve using forwardSearch
     // THIS WILL ONLY WORK IF YOU'VE FINISHED MILESTONE 2
-    PathSolver* pathSolver = new PathSolver();
+    PathSolver* pathSolver = new PathSolver(noOfRows, noOfCols);
     pathSolver->forwardSearch(env);
 
     
@@ -59,24 +83,71 @@ int main(int argc, char** argv){
             << solution->getNode(i)->getCol() << '\n';
     }
 
-    printEnvStdout(env, solution);
+    printEnvStdout(env, solution, noOfRows, noOfCols);
 
 
     delete pathSolver;
     delete exploredPositions;
     delete solution;
-
-}
-
-void readEnvStdin(Env env){
-     for (int r=0; r<ENV_DIM; ++r){
-        for (int c = 0; c<ENV_DIM; ++c){
-            std::cin >> env[r][c];
-        }
+    for (int r = 0; r<noOfRows; ++r){
+        delete[] env[r];
     }
+    delete[] env;
+
 }
 
-void printEnvStdout(Env env, NodeList* solution) {
+Env readEnvStdin(int& nRows, int& nCols){
+    std::vector<char> temp;
+    std::vector<char*> temp2;
+    char newline = '\n';
+    char ch;
+
+    // We will read in the first line of the environment to find out the number of columns
+    nCols = 0; 
+
+    std::cin.get(ch);
+    while ((ch != newline) && !std::cin.eof()){
+        temp.push_back(ch);
+        ++nCols;
+        std::cin.get(ch);
+    }
+
+    // We now know how many columns in the environment
+
+    char* ptr = new char[nCols];
+    temp2.push_back(ptr);
+
+    // We will copy from temp into the new dynamically allocated array
+    for (int i = 0; i<nCols; ++i){
+        temp2[0][i] = temp[i];
+    }
+
+    nRows = 1;
+    while (!std::cin.eof()){
+        ptr = new char[nCols];
+        temp2.push_back(ptr);
+        std::cin.get(ch);
+        int c = 0;
+        while ((ch != newline) && !std::cin.eof()){
+            temp2[nRows][c] = ch;
+            std::cin.get(ch);
+            ++c;
+        }
+        ++nRows;
+    }
+
+    // We now know how many rows there are
+
+    Env env = new char* [nRows];
+
+    for (int r =0; r<nRows; ++r){
+        env[r] = temp2[r];
+    }
+
+    return env;
+}
+
+void printEnvStdout(Env env, NodeList* solution, int nRows, int nCols) {
 
     int nextRow;
     int nextCol;
@@ -86,16 +157,20 @@ void printEnvStdout(Env env, NodeList* solution) {
         nextRow = solution->getNode(i+1)->getRow();
         nextCol = solution->getNode(i+1)->getCol();
         if (newCol == (nextCol -1)){
-            env[newRow][newCol] = '>';    // next node is to the right  
+            // next node is to the right
+            env[newRow][newCol] = '>';      
         } 
         else if (newCol == (nextCol +1)){
-            env[newRow][newCol] = '<';    // next node is to the left
+            // next node is to the left
+            env[newRow][newCol] = '<';    
         }
         else if (newRow == (nextRow +1)){
-            env[newRow][newCol] = '^';    // next node is up 
+            // next node is up 
+            env[newRow][newCol] = '^';    
         }
         else if (newRow == (nextRow -1)){
-            env[newRow][newCol] = 'v';    // next node is down
+            // next node is down
+            env[newRow][newCol] = 'v';    
         } else {
             std::cout << "Invalid row or column" << std::endl;
         }
@@ -104,8 +179,8 @@ void printEnvStdout(Env env, NodeList* solution) {
        
     }
 
-    for(int r= 0; r<ENV_DIM; ++r){
-        for (int c = 0 ; c<ENV_DIM; ++c){
+    for(int r= 0; r<nRows; ++r){
+        for (int c = 0 ; c<nCols; ++c){
             std::cout << env[r][c];
         }
         std::cout << std::endl;

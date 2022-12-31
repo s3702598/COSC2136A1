@@ -1,12 +1,14 @@
-// Class used to execute the forward search and backtracking algorithms
+// Class used to execute the forward search and backtracking algorithms 
 
 #include "PathSolver.h"
 #include <iostream>
 
-PathSolver::PathSolver(){
+PathSolver::PathSolver(int nRows, int nCols){
     nodesExplored = new NodeList();
     startNode = nullptr;
     goalNode = nullptr;
+    this->nRows = nRows;
+    this->nCols = nCols;
 }
 
 PathSolver::~PathSolver(){
@@ -17,14 +19,16 @@ PathSolver::~PathSolver(){
 
 void PathSolver::forwardSearch(Env env){
 
-    NodeList P; // open list
+    // open list
+    NodeList P; 
 
-    // Search for S
+    // Search for Start coordinates
     bool S_found = false;
-    for (int r = 0; r<ENV_DIM && !S_found; r++){
-        for (int c = 0; c<ENV_DIM && !S_found; c++){
+    for (int r = 0; r<nRows && !S_found; r++){
+        for (int c = 0; c<nCols && !S_found; c++){
             if (env[r][c] == SYMBOL_START){
                 startNode = new Node (r, c, 0);
+                // Add S to open list
                 P.addElement(startNode);
                 S_found = true;
             }
@@ -36,13 +40,14 @@ void PathSolver::forwardSearch(Env env){
         exit(EXIT_FAILURE);
     }
 
-    //Search for G
+    //Search for Goal coordiantes
     bool G_found = false;
     int rowG, colG;
     
-    for (int r = 0; r<ENV_DIM && !G_found; r++){
-        for (int c = 0; c<ENV_DIM && !G_found; c++){
+    for (int r = 0; r<nRows && !G_found; r++){
+        for (int c = 0; c<nCols && !G_found; c++){
             if (env[r][c] == SYMBOL_GOAL){
+                // Save the coordiantes of goal
                 rowG = r;
                 colG = c;
                 G_found = true;
@@ -55,6 +60,7 @@ void PathSolver::forwardSearch(Env env){
         exit(EXIT_FAILURE);
     }
 
+    // create a goal node 
     goalNode = new Node(rowG, colG, 0);
     Node* p = P.getNode(0);
     Node* temp;
@@ -63,7 +69,8 @@ void PathSolver::forwardSearch(Env env){
 
     do{
         std::cout << "p= " << p->getRow() << " " << p->getCol() << '\n';
-        for (int dir = 1; dir<= 4; ++dir){ // We will be looking in 4 directions
+        // We will be looking in 4 directions
+        for (int dir = 1; dir<= 4; ++dir){ 
             int newRow = p->getRow();
             int newCol = p->getCol();
             switch (dir){
@@ -94,6 +101,7 @@ void PathSolver::forwardSearch(Env env){
                 if (!found){
                     // Position is not in Closed list
                     Node temp(newRow, newCol, 1+p->getDistanceTraveled());
+                    // Add to open list
                     P.addElement(&temp);
                     std::cout << "Node added: " << temp.getRow() << " " << temp.getCol() 
                     << " " << temp.getDistanceTraveled() << '\n';
@@ -104,7 +112,8 @@ void PathSolver::forwardSearch(Env env){
         // add p to Closed list
         nodesExplored->addElement(p);
 
-        int smallestDistance = 1000; //initialised to a high value that will certainly be replaced
+        //initialised to a high value that will certainly be replaced
+        int smallestDistance = 1000; 
         int index = -1; 
 
         for (int i = 0; i<P.getLength(); ++i){
@@ -143,34 +152,42 @@ void PathSolver::forwardSearch(Env env){
     }while(!found_goal && goal_can_be_found);
 }
 
+
 NodeList* PathSolver::getNodesExplored(){
     
     NodeList* temp = new NodeList(*nodesExplored);
     return temp;
 }
 
+
 NodeList* PathSolver::getPath(Env env){
 
     NodeList * ptr = nullptr;
-    ptr = new NodeList(); // start with empty list
+    // start with empty list
+    ptr = new NodeList(); 
     ptr = getPathRecursive(env, goalNode, ptr);
     return ptr;
 
 }
 
-NodeList* PathSolver::getPathRecursive(Env env, Node* currentNode, NodeList* currentList){
+// Using recursive call, returns a NodeList pointer to the shortest path
+// from start to goal
+NodeList* PathSolver::getPathRecursive
+    (Env env, Node* currentNode, NodeList* currentList){
 
    //std::cout << " Nodes explored lenght: " << nodesExplored->getLength() << '\n';
 
     // Test for base case
-    if ((currentNode->getRow() == startNode->getRow()) &&(currentNode->getCol() == startNode->getCol())){
+    if ((currentNode->getRow() == startNode->getRow()) &&
+        (currentNode->getCol() == startNode->getCol())){
         currentList->addElement(currentNode);
         return currentList;
     }
 
     // Find Node with distance travelled 1 less than the current Node
     int distanceTravelled = currentNode->getDistanceTraveled();
-    for (int dir = 1; dir<= 4; ++dir){ // We will be looking in 4 directions
+    // We will be looking in 4 directions
+    for (int dir = 1; dir<= 4; ++dir){ 
         int newRow = currentNode->getRow();
         int newCol = currentNode->getCol();
         switch (dir){
@@ -203,7 +220,8 @@ NodeList* PathSolver::getPathRecursive(Env env, Node* currentNode, NodeList* cur
 
             // Check if a Node was found in nodeExplored list 
             if (found){
-                std::cout << "Distance travelled: " << distanceTravelled << " Temp distance travelled : " << temp->getDistanceTraveled() << '\n';
+                std::cout << "Distance travelled: " << distanceTravelled <<
+                " Temp distance travelled : " << temp->getDistanceTraveled() << '\n';
                 // Check if distance  is 1 less then current node
                 if (temp->getDistanceTraveled() == (distanceTravelled - 1)){
                     // We have found node we are looking for
@@ -215,9 +233,9 @@ NodeList* PathSolver::getPathRecursive(Env env, Node* currentNode, NodeList* cur
             }
         }
     }  
-
-    return currentList; // We should never reach this point. 
-                        // This is here because some compilers require it.
+    // We should never reach this point. 
+    // This is here because some compilers require it.
+    return currentList; 
     
     
 }
